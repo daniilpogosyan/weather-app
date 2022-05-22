@@ -10,3 +10,63 @@ async function getWeatherDataIn(location) {
 
   return jsonData;
 }
+
+// group list in a 2d-array:
+// groupedData[dayIndex][dtIndex]
+function groupByDay(data) {
+  const groupedData = [];
+
+  let dayData = [];
+  let currentDay = new Date(datefns.secondsToMilliseconds(data.list[0].dt));
+
+  for (let dtData of data.list) {
+    let dtDate = new Date(datefns.secondsToMilliseconds(dtData.dt));
+    
+    // if dtData is from the next day
+    // then save current day data and look for data of the next day
+    if (datefns.differenceInCalendarDays(currentDay, dtDate) !== 0) {
+      groupedData.push(dayData);
+
+      dayData = [];
+      currentDay = dtDate;
+    }
+     dayData.push(dtData);
+  }
+
+  // push the last day separately as it never gets in the if-block
+  groupedData.push(dayData);
+
+  return groupedData
+}
+
+
+// process data leaving only desired properties
+function getDayForecast(dayData) {
+  const date = new Date(datefns.secondsToMilliseconds(dayData[0].dt));
+
+  const minTemp = Math.min(
+    ...dayData.map((data) => data.main.temp_min)
+  );
+
+  const maxTemp = Math.max(
+    ...dayData.map((data) => data.main.temp_max)
+  );
+
+  const maxWindSpeed = Math.max(
+    ...dayData.map((data) => data.wind.speed)
+  );
+
+  return {
+    date,
+    minTemp,
+    maxTemp,
+    maxWindSpeed
+  }
+}
+
+getWeatherDataIn("tashkent")
+.then((data) => {
+  const groupedData = groupByDay(data);
+  const dailyForecast = groupedData.map(getDayForecast);
+  console.log(dailyForecast)
+})
