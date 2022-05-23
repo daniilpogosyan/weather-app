@@ -8,7 +8,6 @@ const pubsub = (() => {
       events[eventName] = []
     }
     events[eventName].forEach((handler) => handler(args))
-    console.log('publish', events)
   }
 
   function subscribe (eventName, handler) {
@@ -19,7 +18,6 @@ const pubsub = (() => {
       events[eventName] = []
     }
     events[eventName].push(handler);
-    console.log('subbscribe', events)
   }
 
   function unsubscribe (eventName, handler) {
@@ -31,8 +29,9 @@ const pubsub = (() => {
     if (unsubscribedIndex > -1) {
       events[eventName].splice(unsubscribedIndex, 1);
     }
-    console.log('unsubscribe', events)
   }
 
   return { publish, subscribe, unsubscribe }
 })();
+
+export default pubsub
