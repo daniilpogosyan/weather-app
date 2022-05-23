@@ -64,9 +64,21 @@ function getDayForecast(dayData) {
   }
 }
 
+function getCurrentWeather(currentData) {
+  return {
+    temp: currentData.main.temp,
+    windSpeed: currentData.wind.speed,
+    humidity: currentData.main.humidity,
+    pressure: currentData.main.pressure,
+    visibility: currentData.visibility
+  }
+}
+
 getWeatherDataIn("tashkent")
 .then((data) => {
   const groupedData = groupByDay(data);
+  const currentWeather = getCurrentWeather(data.list[0])
   const dailyForecast = groupedData.map(getDayForecast);
   console.log(dailyForecast)
+  console.log(currentWeather)
 })
