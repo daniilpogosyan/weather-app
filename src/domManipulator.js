@@ -48,8 +48,9 @@ const domDailyForecast = (() => {
     const wrapper = document.createElement('li');
     wrapper.classList.add('daily-forecast__item');
 
-    const weekDay = document.createElement('p');
-    weekDay.classList.add('weekday');
+    const weekday = document.createElement('p');
+    weekday.classList.add('weekday');
+    weekday.textContent = dayForecastData.weekday;
 
     const date = document.createElement('p');
     date.classList.add('date');
@@ -98,7 +99,7 @@ const domDailyForecast = (() => {
     windSpeed.append(windSpeedVal, windSpeedUnit)
 
     wrapper.append(
-      weekDay,
+      weekday,
       date,
       dayTemp,
       windSpeed

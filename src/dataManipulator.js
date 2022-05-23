@@ -5,7 +5,7 @@ import pubsub from './pubsub'
 async function getWeatherDataIn(location) {
   const apiId = "0481317857c9b5d4697cb1dda05a4fd6";
   const response = await fetch(
-    `https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${apiId}`
+    `https://api.openweathermap.org/data/2.5/forecast?q=${location}&units=metric&appid=${apiId}`
   );
   const jsonData = await response.json();
 
@@ -41,23 +41,35 @@ function groupByDay(data) {
 }
 
 
+// round number to n decimal places
+// if n is negative, then num will be rounded to tens, hundreds etc
+function roundTo(num, n = 0) {
+  const rounder = Math.pow(10,n);
+  return Math.round(num * rounder) / rounder;
+}
+
+
 // process data leaving only desired properties
 function getDayForecast(dayData) {
-  const date = new Date(datefns.secondsToMilliseconds(dayData[0].dt));
+  const dateObj = new Date(datefns.secondsToMilliseconds(dayData[0].dt));
 
-  const minTemp = Math.min(
-    ...dayData.map((data) => data.main.temp_min)
-  );
+  const weekday = datefns.format(dateObj, 'EEEE');
+  const date = datefns.format(dateObj, 'dd/LL')
 
-  const maxTemp = Math.max(
-    ...dayData.map((data) => data.main.temp_max)
-  );
+  const minTemp = Math.round(
+      Math.min(...dayData.map((data) => data.main.temp_min)
+  ));
 
-  const maxWindSpeed = Math.max(
-    ...dayData.map((data) => data.wind.speed)
+  const maxTemp = Math.round(
+      Math.max(...dayData.map((data) => data.main.temp_max)
+  ));
+
+  const maxWindSpeed = roundTo(
+    Math.max(...dayData.map((data) => data.wind.speed)), 1
   );
 
   return {
+    weekday,
     date,
     minTemp,
     maxTemp,
@@ -67,11 +79,11 @@ function getDayForecast(dayData) {
 
 function getCurrentWeather(currentData) {
   return {
-    temp: currentData.main.temp,
-    windSpeed: currentData.wind.speed,
-    humidity: currentData.main.humidity,
-    pressure: currentData.main.pressure,
-    visibility: currentData.visibility
+    temp: roundTo(currentData.main.temp, 0),
+    windSpeed: roundTo(currentData.wind.speed, 1),
+    humidity: roundTo(currentData.main.humidity, 1),
+    pressure: roundTo(currentData.main.grnd_level, 1),
+    visibility: roundTo(currentData.visibility, 1)
   }
 }
 
