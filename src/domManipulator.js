@@ -1,5 +1,23 @@
 import pubsub from './pubsub'
 
+const background = (() => {
+  const background = document.body;
+  background.classList.add('background')
+
+  function setBackground (imgUrl) {
+    background.style.backgroundImage = `url(${imgUrl})`
+  }
+  async function update(location) {
+    let response = await fetch(`https://api.unsplash.com/photos/random?query=${location}&topics=travel&orientation=landscape&client_id=St1xDOIcZCiIML7qGYzwFN5oZ2WHrXvzFCN2JGXPikI`);
+    let json = await response.json();
+    setBackground(json.urls.regular)
+  }
+
+  return { update }
+})();
+
+pubsub.subscribe('weather forecast requested', background.update)
+
 const search = document.getElementById('search-location');
 
 search.addEventListener('change', (e) => {
