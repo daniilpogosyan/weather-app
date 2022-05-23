@@ -100,9 +100,7 @@ pubsub.subscribe('weather forecast requested', function(location) {
     console.log(dailyForecast)
     console.log(currentWeather)
   })
-  .catch(err => {
-    alert(`${location} was not found.`)
-  })
+  .catch(alert)
 })
 
 
